@@ -73,7 +73,7 @@ class GCSArtifactRepository(ArtifactRepository):
 
         results = bkt.list_blobs(prefix=prefix, delimiter="/")
         for result in results:
-            blob_path = result.name[len(artifact_path)+1:]
+            blob_path = result.name
             infos.append(FileInfo(blob_path, False, result.size))
 
         return sorted(infos, key=lambda f: f.path)
