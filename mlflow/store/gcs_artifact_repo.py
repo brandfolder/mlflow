@@ -70,12 +70,12 @@ class GCSArtifactRepository(ArtifactRepository):
         bkt = self.gcs.Client().get_bucket(bucket)
 
         infos = self._list_folders(bkt, prefix, artifact_path)
-
+        
         results = bkt.list_blobs(prefix=prefix, delimiter="/")
         for result in results:
             blob_path = result.name
             infos.append(FileInfo(blob_path, False, result.size))
-
+        
         return sorted(infos, key=lambda f: f.path)
 
     def _list_folders(self, bkt, prefix, artifact_path):
@@ -84,7 +84,7 @@ class GCSArtifactRepository(ArtifactRepository):
         for page in results.pages:
             dir_paths.update(page.prefixes)
 
-        return [FileInfo(path[len(artifact_path)+1:-1], True, None)for path in dir_paths]
+        return [FileInfo(path[len(artifact_path)+1:-1], True, None) for path in dir_paths]
 
     def download_artifacts(self, artifact_path):
         with TempDir(remove_on_exit=False) as tmp:
@@ -101,8 +101,8 @@ class GCSArtifactRepository(ArtifactRepository):
             for file_info in listing:
                 self._download_artifacts_into(file_info.path, local_path)
         else:
-            (bucket, remote_path) = self.parse_gcs_uri(self.artifact_uri)
-            remote_path = build_path(remote_path, artifact_path)
+            bucket = self.parse_gcs_uri(self.artifact_uri)[0]
+            remote_path =  artifact_path
             gcs_bucket = self.gcs.Client().get_bucket(bucket)
             gcs_bucket.get_blob(remote_path).download_to_filename(local_path)
         return local_path
