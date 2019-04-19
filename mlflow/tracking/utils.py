@@ -149,7 +149,8 @@ def _get_file_store(store_uri, **_):
 
 def _is_database_uri(uri):
     if urllib.parse.urlparse(uri).scheme not in DATABASE_ENGINES:
-        return False
+        return True # Issue at the moment is the python3 compatible connection string for sqlalchemy doesn't start with mysql://, it's mysql+mysqlconnector://
+        #return False
     return True
 
 
